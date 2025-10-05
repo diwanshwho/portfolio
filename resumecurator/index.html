@@ -5,134 +5,283 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Curator Tool</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <style>
+        :root {
+            --primary-color: #2d2d2d;
+            --secondary-color: #3a3a3a;
+            --accent-color: #007bff;
+            --text-color: #ffffff;
+            --text-muted: #a0a0a0;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
         body {
-            background-color: #202123;
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-        .chat-container {
+
+        .app-container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            max-width: 1000px;
+            padding: 2rem;
+            max-width: 1200px;
             margin: 0 auto;
             width: 100%;
         }
+
         .header {
             text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #007bff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .chat-container {
+            flex-grow: 1;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
         .chat-messages {
             flex-grow: 1;
+            padding: 2rem;
             overflow-y: auto;
-            margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #343541;
+            max-height: 500px;
         }
+
+        .message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+        }
+
+        .message:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .message.user {
+            background-color: rgba(0, 123, 255, 0.1);
+            margin-left: 2rem;
+        }
+
+        .message.assistant {
+            background-color: rgba(0, 255, 136, 0.1);
+            margin-right: 2rem;
+        }
+
         .input-container {
-            background-color: #343541;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
         }
+
         .message-input {
             width: 100%;
-            min-height: 52px;
-            padding: 12px;
-            padding-right: 100px;
-            background-color: #40414f;
-            border: 1px solid #565869;
-            border-radius: 6px;
-            color: white;
+            min-height: 60px;
+            padding: 1rem;
+            padding-right: 120px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
             resize: none;
             font-size: 1rem;
+            transition: var(--transition);
         }
+
         .message-input:focus {
             outline: none;
-            border-color: #565869;
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.08);
         }
-        .submit-button {
-            position: absolute;
-            right: 32px;
-            bottom: 32px;
-            background: none;
-            border: none;
-            color: #acacbe;
-            cursor: pointer;
-        }
-        .submit-button:hover {
-            color: white;
-        }
+
         .file-input {
             display: none;
         }
-        .attachment-button {
+
+        .action-buttons {
             position: absolute;
-            right: 70px;
-            bottom: 32px;
+            right: 2rem;
+            bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-action {
             background: none;
             border: none;
-            color: #acacbe;
+            color: var(--text-muted);
             cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .attachment-button:hover {
-            color: white;
+
+        .btn-action:hover {
+            color: var(--text-color);
+            background-color: rgba(255, 255, 255, 0.1);
         }
+
+        .btn-action i {
+            font-size: 1.5rem;
+        }
+
         .file-name {
-            font-size: 0.8rem;
-            color: #acacbe;
-            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-name i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1rem 0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .message {
+                margin: 0.5rem 0;
+            }
+        }
+        .file-preview {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-preview i {
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            color: var(--text-muted);
+            align-items: center;
+        }
+
+        .typing-indicator i {
+            font-size: 1.2rem;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: .4; }
+            50% { opacity: 1; }
+            100% { opacity: .4; }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
+    <div class="app-container">
         <div class="header">
-            <h1>Resume Curator Tool</h1>
-            <p>Upload your resume and additional information for analysis</p>
+            <h1><i class='bx bx-analyse'></i> Resume Curator</h1>
+            <p>Intelligent resume analysis and personalized feedback</p>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be added here dynamically -->
+        
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <i class='bx bx-message-square-detail' style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-color);"></i>
+                    <h3>Welcome to Resume Curator</h3>
+                    <p>Upload your resume and provide any specific areas you'd like feedback on. 
+                    Our AI will analyze your resume and provide personalized suggestions.</p>
+                </div>
+            </div>
+            
+            <form id="uploadForm" class="input-container" method="POST" enctype="multipart/form-data">
+                <textarea 
+                    name="message"
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Describe what kind of feedback you're looking for..."
+                    rows="1"
+                ></textarea>
+                
+                <input 
+                    type="file" 
+                    name="file"
+                    id="fileInput" 
+                    class="file-input" 
+                    accept=".pdf,.doc,.docx"
+                >
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn-action" onclick="document.getElementById('fileInput').click()" title="Attach Resume">
+                        <i class='bx bx-paperclip'></i>
+                    </button>
+                    <button type="button" class="btn-action" onclick="submitMessage()" title="Send Message">
+                        <i class='bx bx-send'></i>
+                    </button>
+                </div>
+                
+                <div id="filePreview"></div>
+            </form>
         </div>
-        <form id="uploadForm" class="input-container" method="POST" enctype="multipart/form-data">
-            <textarea 
-                name="message"
-                class="message-input" 
-                id="messageInput" 
-                placeholder="Type your message here..."
-                rows="1"
-            ></textarea>
-            <input 
-                type="file" 
-                name="file"
-                id="fileInput" 
-                class="file-input" 
-                accept=".pdf,.doc,.docx"
-            >
-            <button type="button" class="attachment-button" onclick="document.getElementById('fileInput').click()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1 13h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
-                </svg>
-            </button>
-            <button type="button" class="submit-button" onclick="submitMessage()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
-                </svg>
-            </button>
-            <div class="file-name" id="fileName"></div>
-        </form>
     </div>
 
     <script>
         const messageInput = document.getElementById('messageInput');
         const fileInput = document.getElementById('fileInput');
-        const fileName = document.getElementById('fileName');
+        const filePreview = document.getElementById('filePreview');
         const chatMessages = document.getElementById('chatMessages');
 
         // Auto-resize textarea
@@ -141,23 +290,54 @@
             this.style.height = (this.scrollHeight) + 'px';
         });
 
-        // Show file name when file is selected
+        // Show file preview when file is selected
         fileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
-                fileName.textContent = this.files[0].name;
+                const file = this.files[0];
+                filePreview.innerHTML = `
+                    <div class="file-preview">
+                        <i class='bx bxs-file-pdf'></i>
+                        <div>
+                            <div style="font-weight: 500;">${file.name}</div>
+                            <small style="color: var(--text-muted);">${formatFileSize(file.size)}</small>
+                        </div>
+                        <button type="button" class="btn-action" onclick="removeFile()" style="margin-left: auto;" title="Remove File">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+                `;
             } else {
-                fileName.textContent = '';
+                filePreview.innerHTML = '';
             }
         });
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function removeFile() {
+            fileInput.value = '';
+            filePreview.innerHTML = '';
+        }
 
         function submitMessage() {
             const message = messageInput.value.trim();
             const file = fileInput.files[0];
 
-            if (!message && !file) return;
+            if (!message && !file) {
+                messageInput.focus();
+                return;
+            }
 
             // Display the message in the chat
-            addMessage('user', message, file?.name);
+            addMessage('user', message, file);
+
+            // Show typing indicator
+            showTypingIndicator();
 
             // Submit the form
             const form = document.getElementById('uploadForm');
@@ -166,18 +346,51 @@
             // Clear inputs
             messageInput.value = '';
             fileInput.value = '';
-            fileName.textContent = '';
+            filePreview.innerHTML = '';
             messageInput.style.height = 'auto';
         }
 
-        function addMessage(type, text, filename = null) {
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = `
+                <i class='bx bx-loader-alt bx-spin'></i>
+                <span>Analyzing...</span>
+            `;
+            chatMessages.appendChild(indicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addMessage(type, text, file = null) {
+            // Remove any existing typing indicator
+            const indicators = document.getElementsByClassName('typing-indicator');
+            Array.from(indicators).forEach(indicator => indicator.remove());
+
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message ' + type;
-            messageDiv.style.marginBottom = '20px';
             
-            let content = `<strong>${type === 'user' ? 'You' : 'Assistant'}:</strong> ${text}`;
-            if (filename) {
-                content += `<br><small>Attached file: ${filename}</small>`;
+            let content = `
+                <div style="display: flex; align-items: start; gap: 0.5rem;">
+                    <i class='bx ${type === 'user' ? 'bxs-user-circle' : 'bx-bot'}'></i>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 0.25rem;">
+                            ${type === 'user' ? 'You' : 'Assistant'}
+                        </div>
+                        <div>${text}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (file) {
+                content += `
+                    <div class="file-preview" style="margin-top: 0.5rem;">
+                        <i class='bx bxs-file-pdf'></i>
+                        <div>
+                            <div style="font-weight: 500;">${file.name}</div>
+                            <small style="color: var(--text-muted);">${formatFileSize(file.size)}</small>
+                        </div>
+                    </div>
+                `;
             }
             
             messageDiv.innerHTML = content;
@@ -193,5 +406,7 @@
             }
         });
     </script>
+</body>
+</html>
 </body>
 </html>

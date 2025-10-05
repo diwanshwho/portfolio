@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Curator Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #202123;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #343541;
+        }
+        .input-container {
+            background-color: #343541;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .message-input {
+            width: 100%;
+            min-height: 52px;
+            padding: 12px;
+            padding-right: 100px;
+            background-color: #40414f;
+            border: 1px solid #565869;
+            border-radius: 6px;
+            color: white;
+            resize: none;
+            font-size: 1rem;
+        }
+        .message-input:focus {
+            outline: none;
+            border-color: #565869;
+        }
+        .submit-button {
+            position: absolute;
+            right: 32px;
+            bottom: 32px;
+            background: none;
+            border: none;
+            color: #acacbe;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            color: white;
+        }
+        .file-input {
+            display: none;
+        }
+        .attachment-button {
+            position: absolute;
+            right: 70px;
+            bottom: 32px;
+            background: none;
+            border: none;
+            color: #acacbe;
+            cursor: pointer;
+        }
+        .attachment-button:hover {
+            color: white;
+        }
+        .file-name {
+            font-size: 0.8rem;
+            color: #acacbe;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <h1>Resume Curator Tool</h1>
+            <p>Upload your resume and additional information for analysis</p>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be added here dynamically -->
+        </div>
+        <form id="uploadForm" class="input-container" method="POST" enctype="multipart/form-data">
+            <textarea 
+                name="message"
+                class="message-input" 
+                id="messageInput" 
+                placeholder="Type your message here..."
+                rows="1"
+            ></textarea>
+            <input 
+                type="file" 
+                name="file"
+                id="fileInput" 
+                class="file-input" 
+                accept=".pdf,.doc,.docx"
+            >
+            <button type="button" class="attachment-button" onclick="document.getElementById('fileInput').click()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1 13h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+                </svg>
+            </button>
+            <button type="button" class="submit-button" onclick="submitMessage()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="file-name" id="fileName"></div>
+        </form>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Show file name when file is selected
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = '';
+            }
+        });
+
+        function submitMessage() {
+            const message = messageInput.value.trim();
+            const file = fileInput.files[0];
+
+            if (!message && !file) return;
+
+            // Display the message in the chat
+            addMessage('user', message, file?.name);
+
+            // Submit the form
+            const form = document.getElementById('uploadForm');
+            form.submit();
+
+            // Clear inputs
+            messageInput.value = '';
+            fileInput.value = '';
+            fileName.textContent = '';
+            messageInput.style.height = 'auto';
+        }
+
+        function addMessage(type, text, filename = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.marginBottom = '20px';
+            
+            let content = `<strong>${type === 'user' ? 'You' : 'Assistant'}:</strong> ${text}`;
+            if (filename) {
+                content += `<br><small>Attached file: ${filename}</small>`;
+            }
+            
+            messageDiv.innerHTML = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Handle enter key
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitMessage();
+            }
+        });
+    </script>
+</body>
+</html>

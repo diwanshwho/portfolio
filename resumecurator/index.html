@@ -247,7 +247,7 @@
                 </div>
             </div>
             
-            <form id="uploadForm" class="input-container" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" class="input-container" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault();">
                 <textarea 
                     name="message"
                     class="message-input" 
@@ -339,9 +339,14 @@
             // Show typing indicator
             showTypingIndicator();
 
-            // Submit the form
-            const form = document.getElementById('uploadForm');
-            form.submit();
+            // Prevent form submission until webhook is configured
+            // const form = document.getElementById('uploadForm');
+            // form.submit();
+            
+            // Simulate response for testing
+            setTimeout(() => {
+                addMessage('assistant', 'I have received your message and file. I will analyze your resume and provide feedback shortly.');
+            }, 2000);
 
             // Clear inputs
             messageInput.value = '';

@@ -330,15 +330,32 @@
                 } catch (err) {
                     throw new Error('Invalid response from server.');
                 }
-                // Only show backend response, never default
-                if (typeof data.message === 'string' && data.message.trim()) {
-                    // If backend response is trusted, allow HTML (otherwise use textContent)
-                    addMessage('assistant', data.message, true);
+                // Support both array and object responses
+                let backendMessage = '';
+                if (Array.isArray(data) && data.length > 0 && typeof data[0].output === 'string') {
+                    backendMessage = data[0].output;
+                } else if (typeof data.message === 'string') {
+                    backendMessage = data.message;
+                } else if (typeof data.output === 'string') {
+                    backendMessage = data.output;
+                }
+                if (backendMessage.trim()) {
+                    // Convert Markdown to HTML before rendering
+                    addMessage('assistant', markdownToHTML(backendMessage), true);
                     showNotification('Resume submitted successfully!', 'success');
                 } else {
                     addMessage('assistant', 'No response message received.');
                     showNotification('Submission succeeded, but no message returned.', 'warning');
                 }
+        // Simple Markdown to HTML converter (supports bold, italics, line breaks)
+        function markdownToHTML(md) {
+            if (!md) return '';
+            let html = md
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // bold
+                .replace(/\*(.*?)\*/g, '<i>$1</i>') // italics
+                .replace(/\n/g, '<br>'); // line breaks
+            return html;
+        }
                 clearFileSelection();
                 // Hide welcome message after first submit
                 const welcomeMsg = document.getElementById('welcomeMessage');

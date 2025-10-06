@@ -301,25 +301,43 @@
             submitBtn.disabled = true;
             messageInput.disabled = true;
             attachBtn.disabled = true;
-            // Show loading spinner
             document.getElementById('submitIcon').innerHTML = '<i class="bx bx-loader-alt bx-spin" aria-hidden="true"></i>';
             showTypingIndicator();
             try {
-                if (selectedFile) addMessage('user', `Uploaded: ${selectedFile.name}`);
-                if (message) addMessage('user', message);
+                // Sanitize user message before displaying
+                if (selectedFile) addMessage('user', escapeHTML(`Uploaded: ${selectedFile.name}`));
+                if (message) addMessage('user', escapeHTML(message));
                 // Prepare form data
                 const formData = new FormData();
                 if (message) formData.append('message', message);
                 if (selectedFile) formData.append('file', selectedFile);
-                // Send to webhook
+                // Send to webhook and wait for response
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        // Prevent CSRF and XSS by not allowing credentials and only accepting JSON
+                        'Accept': 'application/json'
+                    },
                 });
-                if (!response.ok) throw new Error('Failed to submit. Please try again.');
-                const data = await response.json();
-                addMessage('assistant', data.message || getDefaultResponse());
-                showNotification('Resume submitted successfully!', 'success');
+                if (!response.ok) {
+                    let errorText = await response.text();
+                    throw new Error(errorText || 'Failed to submit. Please try again.');
+                }
+                let data;
+                try {
+                    data = await response.json();
+                } catch (err) {
+                    throw new Error('Invalid response from server.');
+                }
+                // Only show backend response, never default
+                if (typeof data.message === 'string' && data.message.trim()) {
+                    addMessage('assistant', escapeHTML(data.message));
+                    showNotification('Resume submitted successfully!', 'success');
+                } else {
+                    addMessage('assistant', 'No response message received.');
+                    showNotification('Submission succeeded, but no message returned.', 'warning');
+                }
                 clearFileSelection();
                 // Hide welcome message after first submit
                 const welcomeMsg = document.getElementById('welcomeMessage');
@@ -336,18 +354,35 @@
             }
         }
 
+        // Escape HTML to prevent XSS
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"`]/g, function(tag) {
+                const chars = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;',
+                    '`': '&#96;'
+                };
+                return chars[tag] || tag;
+            });
+        }
+
         function addMessage(role, content) {
             // Remove typing indicators
             Array.from(chatMessages.getElementsByClassName('typing-indicator')).forEach(el => el.remove());
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', role);
             const iconClass = role === 'user' ? 'bx-user' : 'bx-bot';
+            // Use textContent for security, except for icons
             messageDiv.innerHTML = `
                 <div class="message-avatar">
                     <i class="bx ${iconClass}"></i>
                 </div>
-                <div class="message-content">${content}</div>
+                <div class="message-content"></div>
             `;
+            messageDiv.querySelector('.message-content').textContent = content;
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -370,14 +405,7 @@
             const typingIndicator = chatMessages.querySelector('.typing-indicator');
             if (typingIndicator) typingIndicator.remove();
         }
-        function getDefaultResponse() {
-            const responses = [
-                "I'll analyze your resume and provide detailed feedback shortly.",
-                "Thank you for your submission. I'll begin the analysis right away.",
-                "Got your resume! I'll review it and share my insights soon.",
-            ];
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
+        // Removed getDefaultResponse, only backend response is shown
         function handleError(error) {
             let message = 'An error occurred while processing your request.';
             if (error.message) message = error.message;

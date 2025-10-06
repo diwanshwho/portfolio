@@ -332,7 +332,8 @@
                 }
                 // Only show backend response, never default
                 if (typeof data.message === 'string' && data.message.trim()) {
-                    addMessage('assistant', escapeHTML(data.message));
+                    // If backend response is trusted, allow HTML (otherwise use textContent)
+                    addMessage('assistant', data.message, true);
                     showNotification('Resume submitted successfully!', 'success');
                 } else {
                     addMessage('assistant', 'No response message received.');
@@ -369,20 +370,24 @@
             });
         }
 
-        function addMessage(role, content) {
+        function addMessage(role, content, allowHTML = false) {
             // Remove typing indicators
             Array.from(chatMessages.getElementsByClassName('typing-indicator')).forEach(el => el.remove());
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', role);
             const iconClass = role === 'user' ? 'bx-user' : 'bx-bot';
-            // Use textContent for security, except for icons
             messageDiv.innerHTML = `
                 <div class="message-avatar">
                     <i class="bx ${iconClass}"></i>
                 </div>
                 <div class="message-content"></div>
             `;
-            messageDiv.querySelector('.message-content').textContent = content;
+            const contentDiv = messageDiv.querySelector('.message-content');
+            if (allowHTML) {
+                contentDiv.innerHTML = content;
+            } else {
+                contentDiv.textContent = content;
+            }
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }

@@ -3,59 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Curator Tool</title>
+    <title>Resume Curator - AI Resume Analysis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2d2d2d;
-            --secondary-color: #3a3a3a;
-            --accent-color: #007bff;
-            --text-color: #ffffff;
-            --text-muted: #a0a0a0;
-            --border-radius: 12px;
-            --transition: all 0.3s ease;
+            --primary-color: #0D6EFD;
+            --secondary-color: #6C757D;
+            --text-color: #212529;
+            --text-muted: #6C757D;
+            --background-color: #F8F9FA;
+            --border-radius: 0.375rem;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --success-color: #28A745;
+            --error-color: #DC3545;
+            --warning-color: #FFC107;
         }
 
         body {
-            background-color: var(--primary-color);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
             color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 1rem;
         }
 
-        .app-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #007bff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
+        /* Removed unused .header styles */
 
         .chat-container {
             flex-grow: 1;
@@ -157,18 +131,7 @@
             font-size: 1.5rem;
         }
 
-        .file-name {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .file-name i {
-            font-size: 1.2rem;
-        }
+        /* Removed unused .file-name styles */
 
         @media (max-width: 768px) {
             .app-container {
@@ -231,187 +194,227 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="header">
-            <h1><i class='bx bx-analyse'></i> Resume Curator</h1>
-            <p>Intelligent resume analysis and personalized feedback</p>
+    <div class="chat-container">
+        <div class="chat-header">
+            <i class="bx bx-bot" aria-hidden="true"></i>
+            <h5 class="mb-0">Resume Curator</h5>
         </div>
-        
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <div class="welcome-message">
-                    <i class='bx bx-message-square-detail' style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-color);"></i>
-                    <h3>Welcome to Resume Curator</h3>
-                    <p>Upload your resume and provide any specific areas you'd like feedback on. 
-                    Our AI will analyze your resume and provide personalized suggestions.</p>
-                </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message" id="welcomeMessage">
+                <i class='bx bx-message-square-detail' style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color);" aria-hidden="true"></i>
+                <h3>Welcome to Resume Curator</h3>
+                <p>Upload your resume and provide any specific areas you'd like feedback on.<br>
+                Our AI will analyze your resume and provide personalized suggestions.</p>
             </div>
-            
-            <form id="uploadForm" class="input-container" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault();">
-                <textarea 
-                    name="message"
-                    class="message-input" 
-                    id="messageInput" 
-                    placeholder="Describe what kind of feedback you're looking for..."
-                    rows="1"
-                ></textarea>
-                
-                <input 
-                    type="file" 
-                    name="file"
-                    id="fileInput" 
-                    class="file-input" 
-                    accept=".pdf,.doc,.docx"
-                >
-                
-                <div class="action-buttons">
-                    <button type="button" class="btn-action" onclick="document.getElementById('fileInput').click()" title="Attach Resume">
-                        <i class='bx bx-paperclip'></i>
+        </div>
+        <div class="chat-input">
+            <form id="chatForm" autocomplete="off">
+                <div class="mb-3" id="filePreview"></div>
+                <div class="input-group">
+                    <input type="file" id="fileInput" class="d-none" accept=".pdf,.doc,.docx">
+                    <button type="button" class="btn-action" id="attachBtn" aria-label="Attach Resume" title="Attach Resume">
+                        <i class="bx bx-paperclip" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn-action" onclick="submitMessage()" title="Send Message">
-                        <i class='bx bx-send'></i>
+                    <input type="text" id="messageInput" class="form-control" placeholder="Type your message or feedback request..." aria-label="Message">
+                    <button type="submit" class="btn-action" id="submitBtn" aria-label="Send Message" title="Send Message">
+                        <span id="submitIcon"><i class="bx bx-send" aria-hidden="true"></i></span>
                     </button>
                 </div>
-                
-                <div id="filePreview"></div>
             </form>
         </div>
     </div>
 
     <script>
+        // --- Production Ready JS ---
+        const chatForm = document.getElementById('chatForm');
         const messageInput = document.getElementById('messageInput');
         const fileInput = document.getElementById('fileInput');
         const filePreview = document.getElementById('filePreview');
         const chatMessages = document.getElementById('chatMessages');
+        const submitBtn = document.getElementById('submitBtn');
+        const attachBtn = document.getElementById('attachBtn');
+        let selectedFile = null;
 
-        // Auto-resize textarea
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
+    // Webhook URL (set your actual endpoint here)
+    const WEBHOOK_URL = 'https://your-production-webhook-url.com';
 
-        // Show file preview when file is selected
-        fileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                const file = this.files[0];
+        // Accessibility: focus message input on load
+        window.onload = () => messageInput.focus();
+
+        // File attach button
+        attachBtn.addEventListener('click', () => fileInput.click());
+
+        // File input change
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(e) {
+            selectedFile = e.target.files[0];
+            if (selectedFile) {
+                if (!isValidFileType(selectedFile)) {
+                    showNotification('Please upload a PDF or Word document.', 'error');
+                    clearFileSelection();
+                    return;
+                }
+                if (!isValidFileSize(selectedFile)) {
+                    showNotification('File size should be less than 5MB.', 'error');
+                    clearFileSelection();
+                    return;
+                }
                 filePreview.innerHTML = `
-                    <div class="file-preview">
-                        <i class='bx bxs-file-pdf'></i>
-                        <div>
-                            <div style="font-weight: 500;">${file.name}</div>
-                            <small style="color: var(--text-muted);">${formatFileSize(file.size)}</small>
-                        </div>
-                        <button type="button" class="btn-action" onclick="removeFile()" style="margin-left: auto;" title="Remove File">
-                            <i class='bx bx-x'></i>
-                        </button>
+                    <div class="file-info">
+                        <i class="bx bx-file"></i>
+                        <span>${selectedFile.name}</span>
+                        <button type="button" class="btn-close" aria-label="Remove file"></button>
                     </div>
                 `;
-            } else {
-                filePreview.innerHTML = '';
+                filePreview.querySelector('.btn-close').onclick = clearFileSelection;
+                filePreview.classList.add('success-state');
             }
-        });
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        function removeFile() {
+        function isValidFileType(file) {
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            return allowedTypes.includes(file.type);
+        }
+        function isValidFileSize(file) {
+            const maxSize = 5 * 1024 * 1024;
+            return file.size <= maxSize;
+        }
+        function clearFileSelection() {
+            selectedFile = null;
             fileInput.value = '';
             filePreview.innerHTML = '';
+            filePreview.classList.remove('success-state', 'error-state');
         }
 
-        function submitMessage() {
-            const message = messageInput.value.trim();
-            const file = fileInput.files[0];
+        // Form submission
+        chatForm.addEventListener('submit', submitMessage);
 
-            if (!message && !file) {
+        async function submitMessage(e) {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message && !selectedFile) {
+                showNotification('Please enter a message or upload a file.', 'warning');
                 messageInput.focus();
                 return;
             }
-
-            // Display the message in the chat
-            addMessage('user', message, file);
-
-            // Show typing indicator
+            submitBtn.disabled = true;
+            messageInput.disabled = true;
+            attachBtn.disabled = true;
+            // Show loading spinner
+            document.getElementById('submitIcon').innerHTML = '<i class="bx bx-loader-alt bx-spin" aria-hidden="true"></i>';
             showTypingIndicator();
-
-            // Prevent form submission until webhook is configured
-            // const form = document.getElementById('uploadForm');
-            // form.submit();
-            
-            // Simulate response for testing
-            setTimeout(() => {
-                addMessage('assistant', 'I have received your message and file. I will analyze your resume and provide feedback shortly.');
-            }, 2000);
-
-            // Clear inputs
-            messageInput.value = '';
-            fileInput.value = '';
-            filePreview.innerHTML = '';
-            messageInput.style.height = 'auto';
-        }
-
-        function showTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.innerHTML = `
-                <i class='bx bx-loader-alt bx-spin'></i>
-                <span>Analyzing...</span>
-            `;
-            chatMessages.appendChild(indicator);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function addMessage(type, text, file = null) {
-            // Remove any existing typing indicator
-            const indicators = document.getElementsByClassName('typing-indicator');
-            Array.from(indicators).forEach(indicator => indicator.remove());
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ' + type;
-            
-            let content = `
-                <div style="display: flex; align-items: start; gap: 0.5rem;">
-                    <i class='bx ${type === 'user' ? 'bxs-user-circle' : 'bx-bot'}'></i>
-                    <div>
-                        <div style="font-weight: 500; margin-bottom: 0.25rem;">
-                            ${type === 'user' ? 'You' : 'Assistant'}
-                        </div>
-                        <div>${text}</div>
-                    </div>
-                </div>
-            `;
-            
-            if (file) {
-                content += `
-                    <div class="file-preview" style="margin-top: 0.5rem;">
-                        <i class='bx bxs-file-pdf'></i>
-                        <div>
-                            <div style="font-weight: 500;">${file.name}</div>
-                            <small style="color: var(--text-muted);">${formatFileSize(file.size)}</small>
-                        </div>
-                    </div>
-                `;
+            try {
+                if (selectedFile) addMessage('user', `Uploaded: ${selectedFile.name}`);
+                if (message) addMessage('user', message);
+                // Prepare form data
+                const formData = new FormData();
+                if (message) formData.append('message', message);
+                if (selectedFile) formData.append('file', selectedFile);
+                // Send to webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!response.ok) throw new Error('Failed to submit. Please try again.');
+                const data = await response.json();
+                addMessage('assistant', data.message || getDefaultResponse());
+                showNotification('Resume submitted successfully!', 'success');
+                clearFileSelection();
+                // Hide welcome message after first submit
+                const welcomeMsg = document.getElementById('welcomeMessage');
+                if (welcomeMsg) welcomeMsg.style.display = 'none';
+            } catch (error) {
+                handleError(error);
+            } finally {
+                hideTypingIndicator();
+                submitBtn.disabled = false;
+                messageInput.disabled = false;
+                attachBtn.disabled = false;
+                messageInput.value = '';
+                document.getElementById('submitIcon').innerHTML = '<i class="bx bx-send" aria-hidden="true"></i>';
             }
-            
-            messageDiv.innerHTML = content;
+        }
+
+        function addMessage(role, content) {
+            // Remove typing indicators
+            Array.from(chatMessages.getElementsByClassName('typing-indicator')).forEach(el => el.remove());
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', role);
+            const iconClass = role === 'user' ? 'bx-user' : 'bx-bot';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="bx ${iconClass}"></i>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Handle enter key
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.classList.add('message', 'assistant', 'typing-indicator');
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="bx bx-bot"></i>
+                </div>
+                <div class="message-content">
+                    <i class="bx bx-dots-horizontal-rounded"></i>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function hideTypingIndicator() {
+            const typingIndicator = chatMessages.querySelector('.typing-indicator');
+            if (typingIndicator) typingIndicator.remove();
+        }
+        function getDefaultResponse() {
+            const responses = [
+                "I'll analyze your resume and provide detailed feedback shortly.",
+                "Thank you for your submission. I'll begin the analysis right away.",
+                "Got your resume! I'll review it and share my insights soon.",
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+        function handleError(error) {
+            let message = 'An error occurred while processing your request.';
+            if (error.message) message = error.message;
+            showNotification(message, 'error');
+            addMessage('assistant', 'Sorry, there was a problem. Please try again.');
+        }
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+            const notification = document.createElement('div');
+            notification.classList.add('notification', type);
+            const iconMap = {
+                'success': 'bx-check-circle',
+                'error': 'bx-x-circle',
+                'warning': 'bx-error',
+                'info': 'bx-info-circle'
+            };
+            notification.innerHTML = `
+                <i class="bx ${iconMap[type]}" aria-hidden="true"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+            notification.offsetHeight;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        // Enter key submits form
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                submitMessage();
+                chatForm.dispatchEvent(new Event('submit'));
             }
         });
+        // Welcome message
+        addMessage('assistant', 'Hello! I\'m your resume curator. Upload your resume or ask for feedback to get started.');
     </script>
-</body>
-</html>
-</body>
-</html>
+<!-- Removed duplicate closing tags -->

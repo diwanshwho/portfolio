@@ -133,10 +133,11 @@
             border-top: 1px solid var(--outline-color);
             padding: 10px 10px; /* tighter sides to maximize input width */
         }
-        .input-group {
-            display: grid;
-            grid-template-columns: 40px 1fr 40px; /* shrink buttons to expand input horizontally */
-            gap: 8px;
+        /* Force grid layout even with Bootstrap input-group */
+        .chat-input .input-group {
+            display: grid !important;
+            grid-template-columns: 36px minmax(0,1fr) 44px;
+            gap: 6px;
             align-items: center;
         }
         .form-control {
@@ -156,7 +157,7 @@
         }
         .btn-action {
             border: none;
-            border-radius: 50%;
+            border-radius: 9999px; /* ensure perfect circle */
             height: 40px;
             width: 40px;
             display: inline-flex;

@@ -1,0 +1,10 @@
+# Local config injected by CI
+resumecurator/config.js
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+node_modules/
+dist/
+
+

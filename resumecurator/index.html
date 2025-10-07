@@ -200,6 +200,7 @@
             .chat-container { min-height: 80vh; }
         }
     </style>
+    <script src="./config.js"></script>
 </head>
 <body>
     <div class="chat-container">
@@ -243,8 +244,8 @@
         const attachBtn = document.getElementById('attachBtn');
         let selectedFile = null;
 
-    // Webhook URL (set your actual endpoint here)
-    const WEBHOOK_URL = 'https://kawot.app.n8n.cloud/webhook/aabadb2b-f73e-4b0f-bdb5-6441c2cd61c7';
+    // Webhook URL from config.js (injected at deploy). Fallback shows error if missing.
+    const WEBHOOK_URL = (window.APP_CONFIG && window.APP_CONFIG.WEBHOOK_URL) || '';
 
         // Accessibility: focus message input on load
         window.onload = () => messageInput.focus();

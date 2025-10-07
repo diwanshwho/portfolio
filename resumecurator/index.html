@@ -89,7 +89,11 @@
             grid-template-columns: 36px 1fr;
             gap: 12px;
             margin-bottom: 16px;
+            align-items: center; /* align avatar with bubble */
         }
+        .message.user { grid-template-columns: 1fr 36px; }
+        .message.user .message-avatar { grid-column: 2; }
+        .message.user .message-content { grid-column: 1; justify-self: end; }
         .message-avatar i {
             width: 36px;
             height: 36px;
@@ -111,29 +115,39 @@
             border-radius: 14px;
             padding: 12px 14px;
             box-shadow: var(--elev-1);
+            width: fit-content;
+            max-width: 70%;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
         }
         .message.user .message-content {
             background: var(--primary-color);
             color: var(--on-primary);
             border-color: transparent;
+            justify-self: end;
         }
 
         .chat-input {
             background: var(--surface-color);
             border-top: 1px solid var(--outline-color);
-            padding: 12px 16px;
+            padding: 10px 10px; /* tighter sides to maximize input width */
         }
         .input-group {
             display: grid;
-            grid-template-columns: 44px 1fr 44px;
+            grid-template-columns: 40px 1fr 40px; /* shrink buttons to expand input horizontally */
             gap: 8px;
+            align-items: center;
         }
         .form-control {
             border: 1px solid var(--outline-color);
             background: var(--surface-variant);
-            border-radius: 999px;
-            padding: 12px 16px;
+            border-radius: 24px;
+            padding: 12px 16px; /* keep height modest */
+            min-height: 48px;
+            font-size: 1rem;
             box-shadow: none;
+            width: 100%;
         }
         .form-control:focus {
             outline: 2px solid color-mix(in oklab, var(--primary-color) 25%, white);
@@ -143,8 +157,8 @@
         .btn-action {
             border: none;
             border-radius: 50%;
-            height: 44px;
-            width: 44px;
+            height: 40px;
+            width: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -198,6 +212,7 @@
         @media (max-width: 768px) {
             body { padding: 12px; }
             .chat-container { min-height: 80vh; }
+            .message-content { max-width: 85%; }
         }
     </style>
     <script src="./config.js"></script>
@@ -316,6 +331,9 @@
                 // Sanitize user message before displaying
                 if (selectedFile) addMessage('user', escapeHTML(`Uploaded: ${selectedFile.name}`));
                 if (message) addMessage('user', escapeHTML(message));
+                // Hide welcome message immediately after first user interaction
+                const welcomeMsgBlock = document.getElementById('welcomeMessage');
+                if (welcomeMsgBlock) welcomeMsgBlock.style.display = 'none';
                 // Prepare form data
                 const formData = new FormData();
                 if (message) formData.append('message', message);

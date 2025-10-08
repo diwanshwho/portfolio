@@ -240,7 +240,7 @@ h6 {
 #hero {
     width: 100%;
     height: 100vh;
-    background: url("../images/hero-bg.jpg") top right no-repeat;
+    background: url("../images/hero-bg.jpeg") top right no-repeat;
     background-size: cover;
     position: relative;
 }
@@ -847,3 +847,4 @@ section {
     color: #fff;
     text-decoration: none;
 }
+

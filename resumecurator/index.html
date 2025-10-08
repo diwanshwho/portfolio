@@ -87,13 +87,22 @@
         .message {
             display: grid;
             grid-template-columns: 36px 1fr;
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 16px;
-            align-items: center; /* align avatar with bubble */
+            align-items: flex-start; /* top-align avatar and bubble */
         }
-        .message.user { grid-template-columns: 1fr 36px; }
-        .message.user .message-avatar { grid-column: 2; }
-        .message.user .message-content { grid-column: 1; justify-self: end; }
+        .message.user { 
+            display: grid;
+            grid-template-columns: auto 36px; 
+            gap: 8px;
+            align-items: flex-start;
+            justify-items: flex-end;
+        }
+        .message.user .message-avatar { 
+            grid-column: 2; 
+            align-self: flex-start;
+            margin-left: 8px;
+        }
         .message-avatar i {
             width: 36px;
             height: 36px;
@@ -104,6 +113,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: var(--elev-1);
+            vertical-align: top;
+            line-height: 1;
         }
         .message.user .message-avatar i {
             background: #DBEAFE;
@@ -120,36 +131,60 @@
             word-wrap: break-word;
             word-break: break-word;
             white-space: pre-wrap;
+            margin: 0;
         }
         .message.user .message-content {
             background: var(--primary-color);
             color: var(--on-primary);
             border-color: transparent;
-            justify-self: end;
+            grid-column: 1; 
+            justify-self: end; 
+            align-self: flex-start;
+            margin-right: 0;
         }
 
         .chat-input {
             background: var(--surface-color);
             border-top: 1px solid var(--outline-color);
-            padding: 10px 10px; /* tighter sides to maximize input width */
+            padding: 10px 10px; /* restore compact spacing */
         }
         /* Force grid layout even with Bootstrap input-group */
         .chat-input .input-group {
             display: grid !important;
-            grid-template-columns: 36px minmax(0,1fr) 44px;
+            grid-template-columns: 36px minmax(0,1fr) 44px; /* original sizing: small attach, larger send */
             gap: 6px;
             align-items: center;
+            width: 100%;
+            justify-items: stretch;
+        }
+        /* Override Bootstrap input-group child sizing so grid works correctly */
+        .chat-input .input-group > * { min-width: 0; }
+        .chat-input .input-group > .form-control {
+            width: 100% !important; /* prevent width:1% rule from Bootstrap */
         }
         .form-control {
             border: 1px solid var(--outline-color);
             background: var(--surface-variant);
             border-radius: 24px;
-            padding: 12px 16px; /* keep height modest */
+            padding: 12px 16px;
             min-height: 48px;
             font-size: 1rem;
             box-shadow: none;
             width: 100%;
         }
+        /* Textarea tweaks for auto-expansion */
+        textarea.form-control {
+            resize: none;
+            overflow: hidden;
+            line-height: 1.4;
+            max-height: 200px; /* prevent runaway growth */
+            min-width: 0; /* allow shrinking inside grid */
+        }
+
+        /* Explicit grid placement to avoid Bootstrap interference */
+        #attachBtn { grid-column: 1; }
+        #messageInput { grid-column: 2; }
+        #submitBtn { grid-column: 3; }
         .form-control:focus {
             outline: 2px solid color-mix(in oklab, var(--primary-color) 25%, white);
             border-color: var(--primary-color);
@@ -171,9 +206,7 @@
             background: #E5E7EB;
             color: var(--text-color);
         }
-        .btn-action i {
-            font-size: 20px;
-        }
+        .btn-action i { font-size: 20px; }
 
         .file-preview {
             background: var(--surface-variant);
@@ -240,7 +273,7 @@
                     <button type="button" class="btn-action" id="attachBtn" aria-label="Attach Resume" title="Attach Resume">
                         <i class="bx bx-paperclip" aria-hidden="true"></i>
                     </button>
-                    <input type="text" id="messageInput" class="form-control" placeholder="Type your message or feedback request..." aria-label="Message">
+                    <textarea id="messageInput" class="form-control" placeholder="Type your message or feedback request..." aria-label="Message" rows="1"></textarea>
                     <button type="submit" class="btn-action" id="submitBtn" aria-label="Send Message" title="Send Message">
                         <span id="submitIcon"><i class="bx bx-send" aria-hidden="true"></i></span>
                     </button>
@@ -485,8 +518,16 @@
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
+        // Auto-expand textarea height as user types and submit on Enter (without Shift)
+        function autosize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+        }
+        messageInput.addEventListener('input', function() { autosize(this); });
+        // Initialize height on load
+        autosize(messageInput);
         // Enter key submits form
-        messageInput.addEventListener('keypress', function(e) {
+        messageInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 chatForm.dispatchEvent(new Event('submit'));

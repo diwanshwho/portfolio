@@ -413,6 +413,18 @@ section {
     margin-bottom: 0;
 }
 
+/* Custom styles for profile image and content div */
+.profile-image {
+    border-radius: 45%;
+}
+
+/* Hide profile image on screens smaller than 994px */
+@media (max-width: 993px) {
+    .profile-image {
+        display: none;
+    }
+}
+
 .skills .progress {
     height: 60px;
     display: block;

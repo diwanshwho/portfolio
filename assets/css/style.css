@@ -27,8 +27,8 @@ h6 {
     visibility: hidden;
     opacity: 0;
     right: 15px;
-    bottom: 15px;
-    z-index: 996;
+    bottom: 90px;
+    z-index: 9998;
     background: #0563bb;
     width: 40px;
     height: 40px;
@@ -883,6 +883,11 @@ zapier-interfaces-chatbot-embed {
         bottom: 15px !important;
         right: 15px !important;
     }
+    
+    .back-to-top {
+        bottom: 100px !important;
+        right: 15px !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -892,6 +897,11 @@ zapier-interfaces-chatbot-embed {
         bottom: 15px !important;
         right: 15px !important;
         left: 15px !important;
+    }
+    
+    .back-to-top {
+        bottom: 120px !important;
+        right: 15px !important;
     }
 }
 

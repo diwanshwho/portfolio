@@ -132,7 +132,10 @@
   let preloader = select('#preloader');
   if (preloader) {
     window.addEventListener('load', () => {
-      preloader.remove()
+      preloader.style.display = 'none';
+      setTimeout(() => {
+        preloader.remove();
+      }, 100);
     });
   }
 

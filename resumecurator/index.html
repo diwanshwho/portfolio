@@ -464,7 +464,7 @@
             if (allowHTML) {
                 contentDiv.innerHTML = content;
             } else {
-                contentDiv.textContent = content;
+                contentDiv.innerHTML = content;
             }
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -538,4 +538,5 @@
     </script>
 
 <!-- Removed duplicate closing tags -->
+
 

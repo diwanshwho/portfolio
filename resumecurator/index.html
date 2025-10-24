@@ -9,10 +9,12 @@
     <style>
         :root {
             /* Material-inspired palette */
-        --primary-color: #6366F1; /* Modern Indigo */            --on-primary: #FFFFFF;
+            --primary-color: #6366F1; /* Modern Indigo */            
+            --on-primary: #FFFFFF;
             --surface-color: #FFFFFF;
             --surface-variant: #F3F4F6; /* Gray 100 */
-        --background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            --outline-color: #E5E7EB; /* Gray 200 */
+            --background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            
+            --outline-color: #E5E7EB; /* Gray 200 */
             --text-color: #111827; /* Gray 900 */
             --text-muted: #6B7280; /* Gray 500 */
             --success-color: #16A34A;
@@ -32,9 +34,9 @@
             color: var(--text-color);
             margin: 0;
             padding: 24px
-                height: 100vh
-                overflow: hidden;
-                background: var(--background-color);;
+            height: 100vh
+            overflow: hidden;
+            background: var(--background-color);;
 }
         .chat-container {
             width: min(920px, 100%);
@@ -46,8 +48,8 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-        height: calc(100vh - 48px);        }
-
+            height: calc(100vh - 48px);        
+}
         .chat-header {
             display: flex;
             align-items: center;
@@ -398,14 +400,14 @@
                 } else if (typeof data.output === 'string') {
                     backendMessage = data.output;
                 }
-                if (backendMessage.trim()) {
-                    // Convert Markdown to HTML before rendering
-                    addMessage('assistant', markdownToHTML(backendMessage), true);
-                    showNotification('Resume submitted successfully!', 'success');
-                } else {
-                    addMessage('assistant', 'No response message received.');
-                    // showNotification('Submission succeeded, but no message returned.', 'warning');
-                // }
+                // if (backendMessage.trim()) {
+                //     // Convert Markdown to HTML before rendering
+                //     addMessage('assistant', markdownToHTML(backendMessage), true);
+                //     showNotification('Resume submitted successfully!', 'success');
+                // } else {
+                //     addMessage('assistant', 'No response message received.');
+                //     // showNotification('Submission succeeded, but no message returned.', 'warning');
+                // // }
         // Simple Markdown to HTML converter (supports bold, italics, line breaks)
         function markdownToHTML(md) {
             if (!md) return '';
@@ -536,6 +538,7 @@
     </script>
 
 <!-- Removed duplicate closing tags -->
+
 
 
 

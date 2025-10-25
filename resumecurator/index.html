@@ -56,10 +56,12 @@
             gap: 12px;
             padding: 16px 20px;
             border-bottom: 1px solid var(--outline-color);
-            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FF 100%);
+            background: var(--surface-color);
             position: sticky;
             top: 0;
-            t-header i {
+            z-index: 2;
+        }
+        .chat-header i {
             background: var(--primary-color);
             color: var(--on-primary);
             width: 36px;
@@ -79,7 +81,7 @@
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
-            background: linear-gradient(to bottom, #f8f9ff 0%, #f0f4ff 50%, #e8f0ff 100%);
+            background: var(--surface-variant);
         }
 
         .message {
@@ -132,7 +134,7 @@
             margin: 0;
         }
         .message.user .message-content {
-            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+            background: var(--primary-color);
             color: var(--on-primary);
             border-color: transparent;
             grid-column: 1; 
@@ -536,9 +538,6 @@
     </script>
 
 <!-- Removed duplicate closing tags -->
-
-
-
 
 
 

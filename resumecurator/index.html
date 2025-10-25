@@ -13,7 +13,7 @@
             --on-primary: #FFFFFF;
             --surface-color: #FFFFFF;
             --surface-variant: #F3F4F6; /* Gray 100 */
-            --background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            
+            --background-color #FF6B9D;: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            
             --outline-color: #E5E7EB; /* Gray 200 */
             --text-color: #111827; /* Gray 900 */
             --text-muted: #6B7280; /* Gray 500 */
@@ -400,14 +400,14 @@
                 } else if (typeof data.output === 'string') {
                     backendMessage = data.output;
                 }
-                // if (backendMessage.trim()) {
+                if (backendMessage.trim()) {
                 //     // Convert Markdown to HTML before rendering
-                //     addMessage('assistant', markdownToHTML(backendMessage), true);
+                  addMessage('assistant', markdownToHTML(backendMessage), true);
                 //     showNotification('Resume submitted successfully!', 'success');
-                // } else {
-                //     addMessage('assistant', 'No response message received.');
+                } else {
+                  addMessage('assistant', 'No response message received.');
                 //     // showNotification('Submission succeeded, but no message returned.', 'warning');
-                // // }
+                }
         // Simple Markdown to HTML converter (supports bold, italics, line breaks)
         function markdownToHTML(md) {
             if (!md) return '';
@@ -538,6 +538,7 @@
     </script>
 
 <!-- Removed duplicate closing tags -->
+
 
 
 
